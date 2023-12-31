@@ -10,6 +10,7 @@ while True:
     try:
         numbers=data.decode('ascii').split(",")
         x=int(numbers[1])
-        print(x)
+        y=int(numbers[0])
+        print("X:"+str(x)+" Y:"+str(y))
     except:
         continue
