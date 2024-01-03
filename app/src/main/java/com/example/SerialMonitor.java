@@ -8,14 +8,22 @@ import com.fazecast.jSerialComm.SerialPortEvent;
 
 public class SerialMonitor{
 
-    
-    public static void init(){
+    private CommandBuffer buffer;
+
+
+    public SerialMonitor(){
+        buffer = new CommandBuffer();
+    }
+
+
+    public void init(){
         new Thread(() -> {
-                SerialMonitor.read();
+                read();
         }).start();
     }
 
-    private static void read(){
+
+    private void read(){
         if (SerialPort.getCommPorts().length!=0){    
             SerialPort comPort = SerialPort.getCommPorts()[0];
             comPort.openPort();
@@ -24,12 +32,25 @@ public class SerialMonitor{
                 while (true)
                     {
                         while (comPort.bytesAvailable() == 0)
-                            Thread.sleep(100);
+                            Thread.sleep(10);
                         byte[] readBuffer = new byte[comPort.bytesAvailable()];
                         int numRead = comPort.readBytes(readBuffer, readBuffer.length);
-                        //System.out.println("Read " + numRead + " bytes.");
                         String readString = new String(readBuffer, StandardCharsets.UTF_8);
-                        System.out.println(readString);
+                        String[] fields = readString.split(",");
+                        if (fields.length == 2){
+                            Command command = new Command(0,0);
+                            try{
+                                Integer angleX = Integer.parseInt(fields[0]);
+                                //System.out.println(angleX);
+                                command.setAngleX(angleX);
+                            }catch(Exception e){}
+                            try{
+                                Integer angleY = Integer.parseInt(fields[1]);
+                                //System.out.println(angleY);
+                                command.setAngleY(angleY);
+                            }catch(Exception e){}
+                        }
+                           
                     }
             } catch (Exception e) { 
                 //e.printStackTrace(); 
