@@ -33,9 +33,9 @@ void loop()
   int angy = int(accel_ang_y);
   
   // Mostrar resultados
-  Serial.print(angx);
-  Serial.print(",");
   Serial.print(angy);
+  /*Serial.print(",");
+  Serial.print(angy);*/
   Serial.println();
   delay(100);
 }
