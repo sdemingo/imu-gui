@@ -8,11 +8,16 @@ import com.fazecast.jSerialComm.SerialPortEvent;
 
 public class SerialMonitor{
 
-    private CommandBuffer buffer;
+    private String lastCommand;
 
 
     public SerialMonitor(){
-        buffer = new CommandBuffer();
+        lastCommand="";
+    }
+
+
+    public String getLastCommand(){
+        return lastCommand;
     }
 
 
@@ -21,7 +26,7 @@ public class SerialMonitor{
                 read();
         }).start();
     }
-
+   
 
     private void read(){
         if (SerialPort.getCommPorts().length!=0){    
@@ -32,28 +37,14 @@ public class SerialMonitor{
                 while (true)
                     {
                         while (comPort.bytesAvailable() == 0)
-                            Thread.sleep(10);
+                            Thread.sleep(100);
                         byte[] readBuffer = new byte[comPort.bytesAvailable()];
                         int numRead = comPort.readBytes(readBuffer, readBuffer.length);
                         String readString = new String(readBuffer, StandardCharsets.UTF_8);
-                        String[] fields = readString.split(",");
-                        if (fields.length == 2){
-                            Command command = new Command(0,0);
-                            try{
-                                Integer angleX = Integer.parseInt(fields[0]);
-                                //System.out.println(angleX);
-                                command.setAngleX(angleX);
-                            }catch(Exception e){}
-                            try{
-                                Integer angleY = Integer.parseInt(fields[1]);
-                                //System.out.println(angleY);
-                                command.setAngleY(angleY);
-                            }catch(Exception e){}
-                        }
-                           
+                        //System.out.print(readString);                           
+                        lastCommand=readString;
                     }
             } catch (Exception e) { 
-                //e.printStackTrace(); 
                 System.out.println("Error: leyendo el puerto serie");
             }
             comPort.closePort();
@@ -61,6 +52,5 @@ public class SerialMonitor{
             System.out.println("No hay dispositivo conectado al puerto serie");
         }
     }
-
 
 }
