@@ -5,24 +5,67 @@ import javafx.stage.Stage;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
 import javafx.scene.*;
+import javafx.scene.text.*;
 import java.util.Random;
 import javafx.application.Platform;
+import java.util.ArrayList;
+import javafx.geometry.Insets;
 
 
 public class App extends Application {
+    
+    private static int ROW_PANELS = 5;
 
     private static SerialMonitor serial;
     private int intValue;
+    private ArrayList<FlowPane> panels;
+
+
+    private void createPanels(HBox fila){
+        
+        panels=new ArrayList<FlowPane>();
+
+        for (int i=0; i<ROW_PANELS;i++){
+            panels.add(i,new FlowPane());
+            panels.get(i).setStyle("-fx-border-color: black;-fx-background-color: orange");
+            panels.get(i).setPrefHeight(200);
+            fila.getChildren().add(panels.get(i));
+        }
+    }
+
+
+    private void selectPanel(int index){
+        for (FlowPane panel: panels){
+            panel.setStyle("-fx-border-color: black;-fx-background-color: orange");
+        }
+
+        panels.get(index).setStyle("-fx-background-color: red");
+    }
+
 
     @Override
     public void start(Stage stage) throws Exception {
 
         stage.setTitle("Detección de movimiento");
 
-        HBox root =new HBox(10);
-        Label anguloX = new Label("0");
-        root.getChildren().addAll(anguloX);
-        stage.setScene(new Scene(root, 300, 100));
+        
+        VBox root =new VBox(10);
+
+        HBox fila1 = new HBox(20);
+        fila1.setPadding(new Insets(10));
+        Label anguloX = new Label("Angulo: 0");
+        anguloX.setFont(new Font("Arial", 24)); 
+        Region spacer = new Region();
+        spacer.setPrefWidth(200);
+        Label error = new Label("");
+        fila1.getChildren().addAll(anguloX,spacer, error);
+
+        HBox fila2 = new HBox();
+    
+        createPanels(fila2);
+
+        root.getChildren().addAll(fila1, fila2);
+        stage.setScene(new Scene(root, 800, 300));
 
         // separate non-FX thread
         new Thread() {
@@ -39,14 +82,17 @@ public class App extends Application {
                                 String serialValue=serial.getLastCommand();
                                 try{
                                     intValue=Integer.parseInt(serialValue.trim());
-                                    //System.out.println(intValue);
                                 }catch(Exception e){}
-                                anguloX.setText(Integer.toString(intValue));
+                                anguloX.setText("Angulo: "+Integer.toString(intValue));
+                                error.setText(serial.getLastError());
                             }
                         });
                 }
             }
         }.start();        
+
+
+        //selectPanel(2);
 
         stage.show();
     }

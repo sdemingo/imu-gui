@@ -9,15 +9,21 @@ import com.fazecast.jSerialComm.SerialPortEvent;
 public class SerialMonitor{
 
     private String lastCommand;
+    private String lastError;
 
 
     public SerialMonitor(){
         lastCommand="";
+        lastError="";
     }
 
 
     public String getLastCommand(){
         return lastCommand;
+    }
+
+    public String getLastError(){
+        return lastError;
     }
 
 
@@ -41,15 +47,16 @@ public class SerialMonitor{
                         byte[] readBuffer = new byte[comPort.bytesAvailable()];
                         int numRead = comPort.readBytes(readBuffer, readBuffer.length);
                         String readString = new String(readBuffer, StandardCharsets.UTF_8);
-                        //System.out.print(readString);                           
                         lastCommand=readString;
                     }
             } catch (Exception e) { 
-                System.out.println("Error: leyendo el puerto serie");
+                lastError="Error: Lectura errónea del puerto serie";
+                System.out.println(lastError);
             }
             comPort.closePort();
         }else{
-            System.out.println("No hay dispositivo conectado al puerto serie");
+            lastError="Error: No hay dispositivo conectado al puerto serie";
+            System.out.println(lastError);
         }
     }
 
