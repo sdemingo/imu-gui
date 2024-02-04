@@ -19,6 +19,7 @@ public class App extends Application {
     private static SerialMonitor serial;
     private int intValue;
     private ArrayList<FlowPane> panels;
+    private Label anguloX;
 
 
     private void createPanels(HBox fila){
@@ -39,7 +40,27 @@ public class App extends Application {
             panel.setStyle("-fx-border-color: black;-fx-background-color: orange");
         }
 
-        panels.get(index).setStyle("-fx-background-color: red");
+        if (index>=0){
+            panels.get(index).setStyle("-fx-border-color: black; -fx-background-color: red");
+        }
+    }
+
+
+    private void updateAngle(int value){
+        anguloX.setText("Angulo: "+Integer.toString(intValue));                                
+        if (value > 55 && value < 90) {
+            selectPanel(0);
+        }else if (value > 10 && value < 55) {
+            selectPanel(1);
+        }else if (value > -10 && value < 10) {
+            selectPanel(2);
+        }else if (value > -55 && value < -10) {
+            selectPanel(3);
+        }else if (value > -90 && value < -55) {
+            selectPanel(4);
+        }else{
+            selectPanel(-1);
+        }
     }
 
 
@@ -53,7 +74,7 @@ public class App extends Application {
 
         HBox fila1 = new HBox(20);
         fila1.setPadding(new Insets(10));
-        Label anguloX = new Label("Angulo: 0");
+        anguloX = new Label("Angulo: 0");
         anguloX.setFont(new Font("Arial", 24)); 
         Region spacer = new Region();
         spacer.setPrefWidth(200);
@@ -83,14 +104,13 @@ public class App extends Application {
                                 try{
                                     intValue=Integer.parseInt(serialValue.trim());
                                 }catch(Exception e){}
-                                anguloX.setText("Angulo: "+Integer.toString(intValue));
+                                updateAngle(intValue);
                                 error.setText(serial.getLastError());
                             }
                         });
                 }
             }
         }.start();        
-
 
         //selectPanel(2);
 
